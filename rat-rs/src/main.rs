@@ -8,13 +8,20 @@ use aya_log::BpfLogger;
 use bytes::BytesMut;
 use clap::Parser;
 use env_logger::Env;
-use log::{info, error};
+use log::{error, info};
 use tokio::signal;
 
 #[derive(Debug, Parser)]
 struct Opt {
     #[clap(short, long, help = "PID to trace")]
     pid: u32,
+    #[clap(
+        short,
+        long,
+        default_value = "1",
+        help = "File descriptor to trace. Defaults to stdout."
+    )]
+    fd: u32,
 }
 
 #[tokio::main]
@@ -25,6 +32,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let mut loader = BpfLoader::new();
     loader.set_global("PID", &opt.pid);
+    loader.set_global("FD", &opt.fd);
 
     // This will include your eBPF object file as raw bytes at compile-time and load it at
     // runtime. This approach is recommended for most real-world use cases. If you would
