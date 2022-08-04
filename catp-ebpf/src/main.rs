@@ -2,10 +2,13 @@
 #![no_main]
 
 use core::ptr::read_volatile;
+
 use aya_bpf::{
+    helpers::bpf_probe_read_user_buf,
     macros::{kprobe, map},
+    maps::{PerCpuArray, PerfEventByteArray},
     programs::ProbeContext,
-    maps::PerfEventByteArray, BpfContext, helpers::bpf_probe_read_user_buf,
+    BpfContext,
 };
 use aya_log_ebpf::trace;
 
@@ -13,8 +16,8 @@ use aya_log_ebpf::trace;
 #[no_mangle] static FD: u32 = 0;
 #[map] static mut WRITES: PerfEventByteArray = PerfEventByteArray::new(0);
 
-// The max stack size is 512 for the eBPF VM, so take half of it.
-const BUF_SIZE: usize = 256;
+const BUF_SIZE: usize = 32 * 1024;
+#[map] static mut BUF: PerCpuArray<[u8; BUF_SIZE]> = PerCpuArray::with_max_entries(1, 0);
 
 #[kprobe(name="catp_ebpf")]
 pub fn catp_ebpf(ctx: ProbeContext) -> u32 {
@@ -40,8 +43,7 @@ unsafe fn try_catp_ebpf(ctx: ProbeContext) -> Result<u32, u32> {
 
     trace!(&ctx, "write({}, 0x{}, {})", fd, buffer, len);
 
-    let mut buf = [0u8; BUF_SIZE];
-
+    let buf = &mut *BUF.get_ptr_mut(0).ok_or(0u32)?;
     // Maximum of what passes the verifier. This still nets us 256*15 = 3840 bytes, which is
     // already a pretty long line.
     // while loop is not possible as the ebpf verifier will not be able to prove the loop to be
