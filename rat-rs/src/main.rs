@@ -7,7 +7,6 @@ use aya::{
 use aya_log::BpfLogger;
 use bytes::BytesMut;
 use clap::Parser;
-use env_logger::Env;
 use log::{error, info};
 use tokio::signal;
 
@@ -28,7 +27,7 @@ struct Opt {
 async fn main() -> Result<(), anyhow::Error> {
     let opt = Opt::parse();
 
-    env_logger::Builder::from_env(Env::default().default_filter_or("debug")).init();
+    env_logger::init();
 
     let mut loader = BpfLoader::new();
     loader.set_global("PID", &opt.pid);
