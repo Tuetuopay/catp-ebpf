@@ -1,5 +1,5 @@
 [package]
-name = "rat-rs"
+name = "catp"
 version = "0.1.0"
 edition = "2021"
 publish = false
@@ -15,5 +15,5 @@ log = "0.4"
 tokio = { version = "1.18", features = ["macros", "rt", "rt-multi-thread", "net", "signal"] }
 
 [[bin]]
-name = "rat-rs"
+name = "catp"
 path = "src/main.rs"

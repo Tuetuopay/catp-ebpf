@@ -16,15 +16,15 @@ use aya_log_ebpf::trace;
 // The max stack size is 512 for the eBPF VM, so take half of it.
 const BUF_SIZE: usize = 256;
 
-#[kprobe(name="rat_rs")]
-pub fn rat_rs(ctx: ProbeContext) -> u32 {
-    match unsafe { try_rat_rs(ctx) } {
+#[kprobe(name="catp_ebpf")]
+pub fn catp_ebpf(ctx: ProbeContext) -> u32 {
+    match unsafe { try_catp_ebpf(ctx) } {
         Ok(ret) => ret,
         Err(ret) => ret,
     }
 }
 
-unsafe fn try_rat_rs(ctx: ProbeContext) -> Result<u32, u32> {
+unsafe fn try_catp_ebpf(ctx: ProbeContext) -> Result<u32, u32> {
     if ctx.pid() != read_volatile(&PID as *const u32) {
         return Ok(0)
     }

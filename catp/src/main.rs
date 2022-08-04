@@ -38,9 +38,9 @@ async fn main() -> Result<(), anyhow::Error> {
     // like to specify the eBPF program at runtime rather than at compile-time, you can
     // reach for `Bpf::load_file` instead.
     let mut bpf =
-        loader.load(include_bytes_aligned!("../../target/bpfel-unknown-none/release/rat-rs"))?;
+        loader.load(include_bytes_aligned!("../../target/bpfel-unknown-none/release/catp-ebpf"))?;
     BpfLogger::init(&mut bpf)?;
-    let program: &mut KProbe = bpf.program_mut("rat_rs").unwrap().try_into()?;
+    let program: &mut KProbe = bpf.program_mut("catp_ebpf").unwrap().try_into()?;
     program.load()?;
     program.attach("ksys_write", 0)?;
 

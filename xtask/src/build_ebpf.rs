@@ -38,7 +38,7 @@ pub struct Options {
 }
 
 pub fn build_ebpf(opts: Options) -> Result<(), anyhow::Error> {
-    let dir = PathBuf::from("rat-rs-ebpf");
+    let dir = PathBuf::from("catp-ebpf");
     let target = format!("--target={}", opts.target);
     let args = ["+nightly", "build", target.as_str(), "-Z", "build-std=core", "--release"];
     let status = Command::new("cargo")
